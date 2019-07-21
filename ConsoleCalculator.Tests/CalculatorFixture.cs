@@ -98,5 +98,16 @@ namespace ConsoleCalculator.Tests
             var calc = new Calculator();
             calc.SendKeyPress('=').Should().Be("0");
         }
+
+        [Fact]
+        public void Chained_operation_with_default_first_operand_test()
+        {
+            var calc = new Calculator();
+            calc.SendKeyPress('-');
+            calc.SendKeyPress('2');
+            calc.SendKeyPress('-');
+            calc.SendKeyPress('3');
+            calc.SendKeyPress('=').Should().Be("-5");
+        }
     }
 }
