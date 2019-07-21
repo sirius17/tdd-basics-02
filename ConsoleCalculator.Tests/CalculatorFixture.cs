@@ -219,6 +219,20 @@ namespace ConsoleCalculator.Tests
             calc.SendKeySequence("1=").Should().Be("1");
             calc.SendKeySequence("2+=").Should().Be("4");
         }
+
+
+        [Fact]
+        public void Clear_should_reset_calculator()
+        {
+            var calc = new Calculator();
+            calc.SendKeySequence("1+2=").Should().Be("3");
+            calc.SendKeyPress('c').Should().Be("0");
+            calc.SendKeySequence("1+2=").Should().Be("3");
+            calc.SendKeyPress('C').Should().Be("0");
+        }
+
+
+
     }
 
     internal static class CalculatorExtensions

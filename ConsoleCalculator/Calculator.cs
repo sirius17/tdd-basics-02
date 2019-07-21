@@ -6,7 +6,7 @@ namespace ConsoleCalculator
 {
     public class Calculator
     {
-        private readonly KeyBuffer _input = new KeyBuffer(15);
+
 
         private static readonly HashSet<char> _supportedKeys = new HashSet<char>
         {
@@ -24,7 +24,7 @@ namespace ConsoleCalculator
             {'/', new Divide() }
         };
 
-
+        private readonly KeyBuffer _input = new KeyBuffer(15);
         private int? _result = null;
         private int? _lastOperand = null;
         private IBinaryOp _op = null;
@@ -40,11 +40,21 @@ namespace ConsoleCalculator
                     HandleEquals();
                 else if (IsDigit(key) == true)
                     HandleDigit(key);
-                else if (key == 's')
+                else if (key == 's' || key == 'S')
                     HandleSign();
+                else if (key == 'c' || key == 'C')
+                    ResetCalculator();
             }
 
             return GetDisplayValue();
+        }
+
+        private void ResetCalculator()
+        {
+            _input.Clear();
+            _lastOperand = null;
+            _result = null;
+            _op = null;
         }
 
         private void HandleSign()
