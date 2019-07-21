@@ -32,46 +32,60 @@ namespace ConsoleCalculator
             var isSupported = _supportedKeys.Contains(key);
             if (isSupported == false) 
                 return _display;
-            bool isAccumulatorInnitialized = _accumulator != null;
-            if (IsOperator(key) == true )
-            {
-                _op = SupportedOperations[key];
-                _accumulator = isAccumulatorInnitialized ? _op.Apply(_accumulator.Value, CurrentOperand) : CurrentOperand;
-                _display = _accumulator.ToString();
-                _digits = string.Empty;
-            }
+
+            if (IsOperator(key) == true)
+                HandleOperator(key);
             else if (key == '=')
+                HandleEquals();
+            else if (IsDigit(key) == true)
+                HandleDigit(key);
+            else if (key == 's')
+                HandleSign();
+            return Display;
+        }
+
+        private void HandleSign()
+        {
+            if (_digits.Length != 0)
             {
-                if (_op != null)
-                {
-                    var opA = isAccumulatorInnitialized ? _accumulator.Value : 0; 
-                    var opB = int.Parse(_digits);
-                    _accumulator = _op.Apply(opA, opB);
-                }
-                _display = _accumulator?.ToString();
-                _digits = string.Empty;
+                if (_digits.StartsWith("-", StringComparison.Ordinal) == false)
+                    _digits = "-" + _digits;
+                else
+                    _digits = _digits.Substring(1);
             }
-            else if(IsDigit(key) == true)
+            _display = _digits;
+        }
+
+        private void HandleDigit(char key)
+        {
+            var isPrefixedZero = string.IsNullOrWhiteSpace(_digits) == true && key == '0';
+            if (isPrefixedZero == false)
             {
-                var isPrefixedZero = string.IsNullOrWhiteSpace(_digits) == true && key == '0';
-                if (isPrefixedZero == false)
-                {
-                    _digits = _digits + key;
-                    _display = _digits;
-                }
-            }
-            else if(key == 's')
-            {
-                if(_digits.Length != 0 )
-                {
-                    if (_digits.StartsWith("-", StringComparison.Ordinal) == false)
-                        _digits = "-" + _digits;
-                    else    
-                        _digits = _digits.Substring(1);
-                }
+                _digits = _digits + key;
                 _display = _digits;
             }
-            return Display;
+        }
+
+        private void HandleEquals()
+        {
+            bool isAccumulatorInnitialized = _accumulator != null;
+            if (_op != null)
+            {
+                var opA = isAccumulatorInnitialized ? _accumulator.Value : 0;
+                var opB = int.Parse(_digits);
+                _accumulator = _op.Apply(opA, opB);
+            }
+            _display = _accumulator?.ToString();
+            _digits = string.Empty;
+        }
+
+        private void HandleOperator(char key)
+        {
+            bool isAccumulatorInnitialized = _accumulator != null;
+            _op = SupportedOperations[key];
+            _accumulator = isAccumulatorInnitialized ? _op.Apply(_accumulator.Value, CurrentOperand) : CurrentOperand;
+            _display = _accumulator.ToString();
+            _digits = string.Empty;
         }
 
         private int CurrentOperand => string.IsNullOrWhiteSpace(_digits) == true ? 0 : int.Parse(_digits);
@@ -83,28 +97,5 @@ namespace ConsoleCalculator
         private string Display => string.IsNullOrWhiteSpace(_display) ? "0" : _display;
     }
 
-    public interface IBinaryOp
-    {
-        int Apply(int opA, int opB);
-    }
 
-    public class Add  : IBinaryOp
-    {
-        public int Apply(int opA, int opB) => opA + opB;
-    }
-
-    public class Subtract : IBinaryOp
-    {
-        public int Apply(int opA, int opB) => opA - opB;
-    }
-
-    public class Multiply : IBinaryOp
-    {
-        public int Apply(int opA, int opB) => opA * opB;
-    }
-
-    public class Divide : IBinaryOp
-    {
-        public int Apply(int opA, int opB) => opA / opB;
-    }
 }
