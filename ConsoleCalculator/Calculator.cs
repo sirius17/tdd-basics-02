@@ -15,6 +15,12 @@ namespace ConsoleCalculator
             '+', '-', 'x', '/', '=',
             '.', 'c', 's', 'C', 'S'
         };
+        private static readonly HashSet<char> Digits = new HashSet<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
+        private static readonly Dictionary<char, IBinaryOp> SupportedOperations = new Dictionary<char, IBinaryOp>
+        {
+            {'+', new Add()},
+            {'-', new Subtract()}
+        };
 
         private int? _accumulator = null;
         private IBinaryOp _op = null;
@@ -25,17 +31,10 @@ namespace ConsoleCalculator
             if (isSupported == false) 
                 return _display;
 
-            if (key == '+')
+            if (IsOperator(key) == true )
             {
-                _op = new Add();
-                _accumulator = _accumulator == null ? CurrentOperand : _accumulator + CurrentOperand;
-                _display = _accumulator.ToString();
-                _digits = string.Empty;
-            }
-            else if(key == '-')
-            {
-                _op = new Subtract();
-                _accumulator = _accumulator == null ? CurrentOperand : _accumulator - CurrentOperand;
+                _op = SupportedOperations[key];
+                _accumulator = _accumulator == null ? CurrentOperand : _op.Apply(_accumulator.Value, CurrentOperand);
                 _display = _accumulator.ToString();
                 _digits = string.Empty;
             }
@@ -57,10 +56,14 @@ namespace ConsoleCalculator
 
         private int CurrentOperand => int.Parse(_digits);
 
-        private static readonly HashSet<char> Digits = new HashSet<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
+
 
         private bool IsDigit(char key) => Digits.Contains(key);
+
+        private bool IsOperator(char key) => SupportedOperations.Keys.Contains(key);
     }
+
+
 
     public interface IBinaryOp
     {
