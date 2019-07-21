@@ -17,7 +17,7 @@ namespace ConsoleCalculator
         };
 
         private int? _accumulator = null;
-        private char? _op = null;
+        private IBinaryOp _op = null;
 
         public string SendKeyPress(char key)
         {
@@ -27,24 +27,23 @@ namespace ConsoleCalculator
 
             if (key == '+')
             {
-                _op = '+';
+                _op = new Add();
                 _accumulator = (_accumulator ?? 0) + int.Parse(_digits);
                 _display = _accumulator.ToString();
                 _digits = string.Empty;
             }
             else if(key == '-')
             {
-                _op = '-';
+                _op = new Subtract();
                 _accumulator = _accumulator == null ? int.Parse(_digits) : _accumulator - int.Parse(_digits);
                 _display = _accumulator.ToString();
                 _digits = string.Empty;
             }
             else if (key == '=')
             {
-                if(_op == '+')
-                    _accumulator = int.Parse(_digits) + _accumulator;
-                else if(_op == '-')
-                    _accumulator = _accumulator - int.Parse(_digits);
+                var opA = _accumulator.Value;
+                var opB = int.Parse(_digits);
+                _accumulator = _op.Apply(opA, opB);
                 _display = _accumulator.ToString();
                 _digits = string.Empty;
             }
@@ -55,5 +54,20 @@ namespace ConsoleCalculator
             }
             return _display;
         }
+    }
+
+    public interface IBinaryOp
+    {
+        int Apply(int opA, int opB);
+    }
+
+    public class Add  : IBinaryOp
+    {
+        public int Apply(int opA, int opB) => opA + opB;
+    }
+
+    public class Subtract : IBinaryOp
+    {
+        public int Apply(int opA, int opB) => opA - opB;
     }
 }
