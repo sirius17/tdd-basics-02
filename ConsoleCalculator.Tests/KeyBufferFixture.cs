@@ -39,10 +39,12 @@ namespace ConsoleCalculator.Tests
             var buffer = new KeyBuffer(size: 15);
             buffer.IsEmpty.Should().BeTrue();
             buffer.Append('1');
-            buffer.GetValue().Should().Be(1);
+            buffer.ToggleSign();
+            buffer.GetValue().Should().Be(-1);
             buffer.Clear();
             buffer.IsEmpty.Should().BeTrue();
             buffer.GetValue().Should().Be(0);
+            buffer.IsNegative.Should().Be(false);
         }
 
         [Fact]

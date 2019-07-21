@@ -6,9 +6,9 @@ namespace ConsoleCalculator
 {
     public class Calculator
     {
-        private KeyBuffer _inputBuffer = new KeyBuffer(15);
+        private readonly KeyBuffer _input = new KeyBuffer(15);
         private string _display = string.Empty;
-        private string _digits = string.Empty;
+
         private static readonly HashSet<char> _supportedKeys = new HashSet<char>
         {
             '0', '1', '2', '3', '4',
@@ -25,7 +25,7 @@ namespace ConsoleCalculator
             {'/', new Divide() }
         };
 
-        private int? _accumulator = null;
+        private int? _operand = null;
         private IBinaryOp _op = null;
 
         public string SendKeyPress(char key)
@@ -47,101 +47,49 @@ namespace ConsoleCalculator
 
         private void HandleSign()
         {
-            if (_digits.Length != 0)
-            {
-                if (_digits.StartsWith("-", StringComparison.Ordinal) == false)
-                    _digits = "-" + _digits;
-                else
-                    _digits = _digits.Substring(1);
-            }
-            _display = _digits;
+            _input.ToggleSign();
+            _display = _input.GetStringValue();
         }
 
         private void HandleDigit(char key)
         {
-            var isPrefixedZero = string.IsNullOrWhiteSpace(_digits) == true && key == '0';
+            var isPrefixedZero = _input.IsEmpty == true && key == '0';
             if (isPrefixedZero == false)
             {
-                _digits = _digits + key;
-                _display = _digits;
+                _input.Append(key);
+                _display = _input.GetStringValue();
             }
         }
 
         private void HandleEquals()
         {
-            bool isAccumulatorInnitialized = _accumulator != null;
+            bool isAccumulatorInnitialized = _operand != null;
             if (_op != null)
             {
-                var opA = isAccumulatorInnitialized ? _accumulator.Value : 0;
-                var opB = int.Parse(_digits);
-                _accumulator = _op.Apply(opA, opB);
+                var opA = isAccumulatorInnitialized ? _operand.Value : 0;
+                var opB = _input.GetValue();
+                _operand = _op.Apply(opA, opB);
             }
-            _display = _accumulator?.ToString();
+            _display = _operand?.ToString();
 
         }
 
         private void HandleOperator(char key)
         {
-            bool isAccumulatorInnitialized = _accumulator != null;
+            bool isAccumulatorInnitialized = _operand != null;
             _op = SupportedOperations[key];
-            _accumulator = isAccumulatorInnitialized ? _op.Apply(_accumulator.Value, CurrentOperand) : CurrentOperand;
-            _display = _accumulator.ToString();
-            _digits = string.Empty;
+            _operand = isAccumulatorInnitialized ? _op.Apply(_operand.Value, _input.GetValue()) : _input.GetValue();
+            _display = _operand.ToString();
+            _input.Clear();
         }
-
-        private int CurrentOperand => string.IsNullOrWhiteSpace(_digits) == true ? 0 : int.Parse(_digits);
 
         private bool IsDigit(char key) => Digits.Contains(key);
 
         private bool IsOperator(char key) => SupportedOperations.Keys.Contains(key);
 
         private string Display => string.IsNullOrWhiteSpace(_display) ? "0" : _display;
-    }
 
 
-    public class KeyBuffer
-    {
-        private readonly char[] _buffer;
-        private readonly Memory<char> _vector;
-        private int _pos = -1;
-
-        public KeyBuffer(int size)
-        {
-            _buffer = new char[size];
-            _vector = new Memory<char>(_buffer);
-        }
-
-        public void Append(char digit)
-        {
-            _buffer[++_pos] = digit;
-        }
-
-        public int GetValue()
-        {
-            if (IsEmpty == true)
-                return 0;
-            var str = new string(_vector.Slice(0, _pos+1).ToArray());
-            return IsNegative ? -int.Parse(str) : int.Parse(str);
-        }
-
-        public void Clear()
-        {
-            for (int i = 0; i < _buffer.Length; i++)
-            {
-                _buffer[i] = '*';
-            }
-            _pos = -1;
-        }
-
-        public void ToggleSign()
-        {
-            if(IsEmpty == false )
-                IsNegative = !IsNegative;
-        }
-
-        public bool IsEmpty => _pos == -1;
-
-        public bool IsNegative { get; private set; }
     }
 
 }
