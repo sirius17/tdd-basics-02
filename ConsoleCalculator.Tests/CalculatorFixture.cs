@@ -197,6 +197,13 @@ namespace ConsoleCalculator.Tests
             calc.SendKeySequence(seq);
             calc.SendKeyPress('=').Should().Be(expected);
         }
+
+        [Fact]
+        public void Consequtive_equals_should_duplicate_last_operation_test()
+        {
+            var calc = new Calculator();
+            calc.SendKeySequence("1+2===").Should().Be("7");
+        }
     }
 
     internal static class CalculatorExtensions

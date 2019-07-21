@@ -6,6 +6,7 @@ namespace ConsoleCalculator
 {
     public class Calculator
     {
+        private KeyBuffer _inputBuffer = new KeyBuffer(15);
         private string _display = string.Empty;
         private string _digits = string.Empty;
         private static readonly HashSet<char> _supportedKeys = new HashSet<char>
@@ -76,7 +77,7 @@ namespace ConsoleCalculator
                 _accumulator = _op.Apply(opA, opB);
             }
             _display = _accumulator?.ToString();
-            _digits = string.Empty;
+
         }
 
         private void HandleOperator(char key)
@@ -97,5 +98,50 @@ namespace ConsoleCalculator
         private string Display => string.IsNullOrWhiteSpace(_display) ? "0" : _display;
     }
 
+
+    public class KeyBuffer
+    {
+        private readonly char[] _buffer;
+        private readonly Memory<char> _vector;
+        private int _pos = -1;
+
+        public KeyBuffer(int size)
+        {
+            _buffer = new char[size];
+            _vector = new Memory<char>(_buffer);
+        }
+
+        public void Append(char digit)
+        {
+            _buffer[++_pos] = digit;
+        }
+
+        public int GetValue()
+        {
+            if (IsEmpty == true)
+                return 0;
+            var str = new string(_vector.Slice(0, _pos+1).ToArray());
+            return IsNegative ? -int.Parse(str) : int.Parse(str);
+        }
+
+        public void Clear()
+        {
+            for (int i = 0; i < _buffer.Length; i++)
+            {
+                _buffer[i] = '*';
+            }
+            _pos = -1;
+        }
+
+        public void ToggleSign()
+        {
+            if(IsEmpty == false )
+                IsNegative = !IsNegative;
+        }
+
+        public bool IsEmpty => _pos == -1;
+
+        public bool IsNegative { get; private set; }
+    }
 
 }
