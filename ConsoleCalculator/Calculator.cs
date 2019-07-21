@@ -8,7 +8,7 @@ namespace ConsoleCalculator
         public string SendKeyPress(char key)
         {
             // Add your implementation here.
-            throw new NotImplementedException();
+            return key.ToString();
         }
     }
 }
