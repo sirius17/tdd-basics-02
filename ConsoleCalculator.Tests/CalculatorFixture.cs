@@ -153,5 +153,17 @@ namespace ConsoleCalculator.Tests
             calc.SendKeyPress('2');
             calc.SendKeyPress('=').Should().Be("1");
         }
+
+        [Fact]
+        public void Ignore_initial_zeros_for_integers_test()
+        {
+            var calc = new Calculator();
+            calc.SendKeyPress('0').Should().Be("0");
+            calc.SendKeyPress('0').Should().Be("0");
+            calc.SendKeyPress('0').Should().Be("0");
+            calc.SendKeyPress('2').Should().Be("2");
+            calc.SendKeyPress('0').Should().Be("20");
+            calc.SendKeyPress('0').Should().Be("200");
+        }
     }
 }

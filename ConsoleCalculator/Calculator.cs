@@ -53,8 +53,12 @@ namespace ConsoleCalculator
             }
             else if(IsDigit(key) == true)
             {
-                _digits = _digits + key;
-                _display = _digits;
+                var isPrefixedZero = string.IsNullOrWhiteSpace(_digits) == true && key == '0';
+                if (isPrefixedZero == false)
+                {
+                    _digits = _digits + key;
+                    _display = _digits;
+                }
             }
             return Display;
         }

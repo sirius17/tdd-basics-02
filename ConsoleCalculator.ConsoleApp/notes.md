@@ -4,7 +4,7 @@
 [X] Handling of unsupported keys.
 [X] Add support for addition
 [X] Add support for subtraction
-[ ] Add support for multiplication
-[ ] Add support for division
-[ ] Add handling of default zero display.
+[X] Add support for multiplication
+[X] Add support for division
+[X] Add handling of default zero display.
 [ ] Add handling for ignoring sequential prefixed zero inputs.
