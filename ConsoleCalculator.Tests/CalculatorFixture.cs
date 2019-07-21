@@ -165,5 +165,48 @@ namespace ConsoleCalculator.Tests
             calc.SendKeyPress('0').Should().Be("20");
             calc.SendKeyPress('0').Should().Be("200");
         }
+
+
+        [Fact]
+        public void Zero_should_ignore_sign_test()
+        {
+            var calc = new Calculator();
+            calc.SendKeyPress('s').Should().Be("0");
+            calc.SendKeyPress('0').Should().Be("0");
+            calc.SendKeyPress('s').Should().Be("0");
+        }
+
+        [Fact]
+        public void Non_zero_operand_should_honor_sign_test()
+        {
+            var calc = new Calculator();
+            calc.SendKeyPress('1').Should().Be("1");
+            calc.SendKeyPress('s').Should().Be("-1");
+            calc.SendKeyPress('s').Should().Be("1");
+        }
+
+
+        [Theory]
+        [InlineData("12s + 10", "-2")]
+        [InlineData("12s - 10", "-22")]
+        [InlineData("12s x 10", "-120")]
+        [InlineData("120s / 10", "-12")]
+        public void Operations_with_negative_numbers_test(string seq, string expected )
+        {
+            var calc = new Calculator();
+            calc.SendKeySequence(seq);
+            calc.SendKeyPress('=').Should().Be(expected);
+        }
+    }
+
+    internal static class CalculatorExtensions
+    {
+        public static string SendKeySequence(this Calculator calc, string keys)
+        {
+            var result = string.Empty;
+            foreach (var key in keys)
+                result = calc.SendKeyPress(key);
+            return result;
+        }
     }
 }

@@ -60,6 +60,17 @@ namespace ConsoleCalculator
                     _display = _digits;
                 }
             }
+            else if(key == 's')
+            {
+                if(_digits.Length != 0 )
+                {
+                    if (_digits.StartsWith("-", StringComparison.Ordinal) == false)
+                        _digits = "-" + _digits;
+                    else    
+                        _digits = _digits.Substring(1);
+                }
+                _display = _digits;
+            }
             return Display;
         }
 
