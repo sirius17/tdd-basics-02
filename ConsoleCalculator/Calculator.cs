@@ -28,14 +28,14 @@ namespace ConsoleCalculator
             if (key == '+')
             {
                 _op = new Add();
-                _accumulator = (_accumulator ?? 0) + int.Parse(_digits);
+                _accumulator = _accumulator == null ? CurrentOperand : _accumulator + CurrentOperand;
                 _display = _accumulator.ToString();
                 _digits = string.Empty;
             }
             else if(key == '-')
             {
                 _op = new Subtract();
-                _accumulator = _accumulator == null ? int.Parse(_digits) : _accumulator - int.Parse(_digits);
+                _accumulator = _accumulator == null ? CurrentOperand : _accumulator - CurrentOperand;
                 _display = _accumulator.ToString();
                 _digits = string.Empty;
             }
@@ -47,13 +47,19 @@ namespace ConsoleCalculator
                 _display = _accumulator.ToString();
                 _digits = string.Empty;
             }
-            else
+            else if(IsDigit(key) == true)
             {
                 _digits = _digits + key;
                 _display = _digits;
             }
             return _display;
         }
+
+        private int CurrentOperand => int.Parse(_digits);
+
+        private static readonly HashSet<char> Digits = new HashSet<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
+
+        private bool IsDigit(char key) => Digits.Contains(key);
     }
 
     public interface IBinaryOp
