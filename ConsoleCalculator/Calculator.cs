@@ -14,6 +14,8 @@ namespace ConsoleCalculator
             '+', '-', 'x', '/', '=',
             '.', 'c', 's', 'C', 'S'
         };
+        private int _accumulator = 0;
+
 
         public string SendKeyPress(char key)
         {
@@ -22,7 +24,20 @@ namespace ConsoleCalculator
             if (isSupported == false) 
                 return _digits;
 
-            _digits = _digits + key;
+            if (key == '+')
+            {
+                _accumulator = int.Parse(_digits);
+                _digits = string.Empty;
+            }
+            else if (key == '=')
+            {
+                _accumulator = int.Parse(_digits) + _accumulator;
+                _digits = _accumulator.ToString();
+            }
+            else
+            {
+                _digits = _digits + key;
+            }
             return _digits;
         }
     }

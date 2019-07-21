@@ -47,5 +47,15 @@ namespace ConsoleCalculator.Tests
             calc.SendKeyPress('a').Should().Be("1");        // Ideally this next key press should be ignored.
             calc.SendKeyPress('4').Should().Be("14");       // Valid digit, so this should work
         }
+
+        [Fact]
+        public void Simple_addition_test()
+        {
+            var calc = new Calculator();
+            calc.SendKeyPress('1');
+            calc.SendKeyPress('+');
+            calc.SendKeyPress('2');
+            calc.SendKeyPress('=').Should().Be("3");
+        }
     }
 }
