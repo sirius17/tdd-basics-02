@@ -37,5 +37,15 @@ namespace ConsoleCalculator.Tests
             calc.SendKeyPress('2').Should().Be("12");
             calc.SendKeyPress('7').Should().Be("127");
         }
+
+        [Fact]
+        public void Ignore_unsupported_keys_test()
+        {
+            var calc = new Calculator();
+            calc.SendKeyPress('a').Should().BeEmpty();
+            calc.SendKeyPress('1').Should().Be("1");
+            calc.SendKeyPress('a').Should().Be("1");        // Ideally this next key press should be ignored.
+            calc.SendKeyPress('4').Should().Be("14");       // Valid digit, so this should work
+        }
     }
 }
