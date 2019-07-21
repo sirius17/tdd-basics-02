@@ -28,5 +28,14 @@ namespace ConsoleCalculator.Tests
             Calculator calc = new Calculator();
             calc.SendKeyPress(key).Should().Be(expected);
         }
+
+        [Fact]
+        public void Multiple_digit_number_entry_test()
+        {
+            var calc = new Calculator();
+            calc.SendKeyPress('1').Should().Be("1");
+            calc.SendKeyPress('2').Should().Be("12");
+            calc.SendKeyPress('7').Should().Be("127");
+        }
     }
 }
