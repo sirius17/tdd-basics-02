@@ -57,5 +57,17 @@ namespace ConsoleCalculator.Tests
             calc.SendKeyPress('2');
             calc.SendKeyPress('=').Should().Be("3");
         }
+
+        [Fact]
+        public void Chained_addition_test()
+        {
+            var calc = new Calculator();
+            calc.SendKeyPress('1');
+            calc.SendKeyPress('+');
+            calc.SendKeyPress('2');
+            calc.SendKeyPress('+').Should().Be("3");
+            calc.SendKeyPress('3');
+            calc.SendKeyPress('=').Should().Be("6");
+        }
     }
 }

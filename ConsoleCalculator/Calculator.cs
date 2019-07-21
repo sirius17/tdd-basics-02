@@ -6,6 +6,7 @@ namespace ConsoleCalculator
 {
     public class Calculator
     {
+        private string _display = string.Empty;
         private string _digits = string.Empty;
         private static readonly HashSet<char> _supportedKeys = new HashSet<char>
         {
@@ -14,31 +15,32 @@ namespace ConsoleCalculator
             '+', '-', 'x', '/', '=',
             '.', 'c', 's', 'C', 'S'
         };
-        private int _accumulator = 0;
-
+        private int? _accumulator = null;
 
         public string SendKeyPress(char key)
         {
-
             var isSupported = _supportedKeys.Contains(key);
             if (isSupported == false) 
-                return _digits;
+                return _display;
 
             if (key == '+')
             {
-                _accumulator = int.Parse(_digits);
+                _accumulator = (_accumulator ?? 0) + int.Parse(_digits);
+                _display = _accumulator.ToString();
                 _digits = string.Empty;
             }
             else if (key == '=')
             {
                 _accumulator = int.Parse(_digits) + _accumulator;
-                _digits = _accumulator.ToString();
+                _display = _accumulator.ToString();
+                _digits = string.Empty;
             }
             else
             {
                 _digits = _digits + key;
+                _display = _digits;
             }
-            return _digits;
+            return _display;
         }
     }
 }
