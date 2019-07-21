@@ -42,7 +42,7 @@ namespace ConsoleCalculator.Tests
         public void Ignore_unsupported_keys_test()
         {
             var calc = new Calculator();
-            calc.SendKeyPress('a').Should().BeEmpty();
+            calc.SendKeyPress('a').Should().Be("0");
             calc.SendKeyPress('1').Should().Be("1");
             calc.SendKeyPress('a').Should().Be("1");        // Ideally this next key press should be ignored.
             calc.SendKeyPress('4').Should().Be("14");       // Valid digit, so this should work
@@ -203,6 +203,21 @@ namespace ConsoleCalculator.Tests
         {
             var calc = new Calculator();
             calc.SendKeySequence("1+2===").Should().Be("7");
+        }
+
+        [Fact]
+        public void Operation_with_single_operand_should_copy_to_second_operand_test()
+        {
+            var calc = new Calculator();
+            calc.SendKeySequence("1+=").Should().Be("2");
+        }
+
+        [Fact]
+        public void Equal_without_operation_should_treat_operand_as_result()
+        {
+            var calc = new Calculator();
+            calc.SendKeySequence("1=").Should().Be("1");
+            calc.SendKeySequence("2+=").Should().Be("4");
         }
     }
 

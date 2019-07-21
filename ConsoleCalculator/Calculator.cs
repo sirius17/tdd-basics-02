@@ -7,7 +7,6 @@ namespace ConsoleCalculator
     public class Calculator
     {
         private readonly KeyBuffer _input = new KeyBuffer(15);
-        private string _display = string.Empty;
 
         private static readonly HashSet<char> _supportedKeys = new HashSet<char>
         {
@@ -25,30 +24,32 @@ namespace ConsoleCalculator
             {'/', new Divide() }
         };
 
-        private int? _operand = null;
+
+        private int? _result = null;
+        private int? _lastOperand = null;
         private IBinaryOp _op = null;
 
         public string SendKeyPress(char key)
         {
             var isSupported = _supportedKeys.Contains(key);
-            if (isSupported == false) 
-                return _display;
+            if (isSupported == true)
+            {
+                if (IsOperator(key) == true)
+                    HandleOperator(key);
+                else if (key == '=')
+                    HandleEquals();
+                else if (IsDigit(key) == true)
+                    HandleDigit(key);
+                else if (key == 's')
+                    HandleSign();
+            }
 
-            if (IsOperator(key) == true)
-                HandleOperator(key);
-            else if (key == '=')
-                HandleEquals();
-            else if (IsDigit(key) == true)
-                HandleDigit(key);
-            else if (key == 's')
-                HandleSign();
-            return Display;
+            return GetDisplayValue();
         }
 
         private void HandleSign()
         {
             _input.ToggleSign();
-            _display = _input.GetStringValue();
         }
 
         private void HandleDigit(char key)
@@ -57,29 +58,55 @@ namespace ConsoleCalculator
             if (isPrefixedZero == false)
             {
                 _input.Append(key);
-                _display = _input.GetStringValue();
             }
         }
 
         private void HandleEquals()
         {
-            bool isAccumulatorInnitialized = _operand != null;
-            if (_op != null)
+            /// Specification
+            /// 1. If = is pressed without an operation, then current input is the last operand
+            /// 2. In all other cases = performs the operation. The only thing that matters is what are the values of opA and opB.
+            /// opA = result or lastOperand
+            /// opB = currentInput or lastOperand (if current input is null)
+            bool hasOperation = _op != null;
+            if( hasOperation == false )
             {
-                var opA = isAccumulatorInnitialized ? _operand.Value : 0;
-                var opB = _input.GetValue();
-                _operand = _op.Apply(opA, opB);
+                _result = _input.GetValue();
+                _input.Clear();
+                return;
             }
-            _display = _operand?.ToString();
 
+            var resultExists = _result != null;
+            var opA = resultExists ? _result.Value : _lastOperand.Value;
+            var opB = _input.IsEmpty == false ? _input.GetValue() : _lastOperand.Value;
+            _result = _op.Apply(opA, opB);
+            _lastOperand = opB;
+            _input.Clear();
         }
 
         private void HandleOperator(char key)
         {
-            bool isAccumulatorInnitialized = _operand != null;
+            /// Specification
+            /// When an operator is pressed, if two operands are present, then the operation is applied to the result.
+            /// Two operators are persent when one of the  the following occur -
+            /// 1. Either lastOperand exists alone
+            /// 2. Both result and lastOperand exist.
+            /// Else the operand and operation are recorded and result is reset.
+            /// In all cases we will record the operation selected and the current operand.
             _op = SupportedOperations[key];
-            _operand = isAccumulatorInnitialized ? _op.Apply(_operand.Value, _input.GetValue()) : _input.GetValue();
-            _display = _operand.ToString();
+            var currentOp = _input.GetValue();
+            var twoOperandsPresent = (_result != null && _lastOperand != null) || (_result == null && _lastOperand != null);
+            if (twoOperandsPresent == true)
+            {
+                var opA = _result != null ? _result.Value : _lastOperand.Value;
+                _result = _op.Apply(opA, currentOp);
+            }
+            else
+            {
+                // We are reseting result since results without 2 operands cannot be calculated.
+                _result = null;
+            }
+            _lastOperand = currentOp;
             _input.Clear();
         }
 
@@ -87,9 +114,20 @@ namespace ConsoleCalculator
 
         private bool IsOperator(char key) => SupportedOperations.Keys.Contains(key);
 
-        private string Display => string.IsNullOrWhiteSpace(_display) ? "0" : _display;
-
-
+        private string GetDisplayValue()
+        {
+            /// Spec:
+            /// If key buffer is not empty then display the buffer.
+            /// If it is empty then display the result in memory
+            /// Else display the operand
+            if(_input.IsEmpty == false)
+                return _input.GetStringValue();
+            if (_result != null)
+                return _result.ToString();
+            if (_lastOperand != null)
+                return _lastOperand.ToString();
+            return "0";
+        }
     }
 
 }
