@@ -239,7 +239,19 @@ namespace ConsoleCalculator.Tests
         }
 
 
+        [Fact]
+        public void Simple_decimal_number_display_test()
+        {
+            var calc = new Calculator();
+            calc.SendKeySequence("3.142").Should().Be("3.142");
+        }
 
+        [Fact]
+        public void Ignore_multiple_decimal_point_input_test()
+        {
+            var calc = new Calculator();
+            calc.SendKeySequence("3.1..4...2..").Should().Be("3.142");
+        }
     }
 
     internal static class CalculatorExtensions

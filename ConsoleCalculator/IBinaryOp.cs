@@ -2,6 +2,6 @@
 {
     public interface IBinaryOp
     {
-        int Apply(int opA, int opB);
+        float Apply(float opA, float opB);
     }
 }

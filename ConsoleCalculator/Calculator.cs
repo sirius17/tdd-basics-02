@@ -15,7 +15,7 @@ namespace ConsoleCalculator
             '+', '-', 'x', '/', '=',
             '.', 'c', 's', 'C', 'S'
         };
-        private static readonly HashSet<char> Digits = new HashSet<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
+        private static readonly HashSet<char> Digits = new HashSet<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.' };
         private static readonly Dictionary<char, IBinaryOp> SupportedOperations = new Dictionary<char, IBinaryOp>
         {
             {'+', new Add()},
@@ -25,8 +25,8 @@ namespace ConsoleCalculator
         };
 
 
-        private int? _result = null;
-        private int? _lastOperand = null;
+        private float? _result = null;
+        private float? _lastOperand = null;
         private IBinaryOp _op = null;
 
         public string SendKeyPress(char key)
@@ -77,8 +77,14 @@ namespace ConsoleCalculator
 
         private void HandleDigit(char key)
         {
-            if (_input.IsEmpty == false && _input.GetValue() == 0)
-                    _input.Clear();
+            // Ignore multiple decimal points.
+            if (_input.Contains('.') && key == '.')
+                return;
+            // Ingore multiple preceeding zeros.
+#pragma warning disable RECS0018 // Comparison of floating point numbers with equality operator
+            if (_input.IsEmpty == false && _input.GetValue() == 0f)
+#pragma warning restore RECS0018 // Comparison of floating point numbers with equality operator
+                _input.Clear();
             _input.Append(key);
         }
 

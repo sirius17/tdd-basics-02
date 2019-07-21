@@ -74,5 +74,16 @@ namespace ConsoleCalculator.Tests
             buffer.ToggleSign();
             buffer.IsNegative.Should().BeFalse();
         }
+
+        [Fact]
+        public void Buffer_contains_test()
+        {
+            var buffer = new KeyBuffer(size: 15);
+            buffer.Append('1');
+            buffer.Contains('.').Should().BeFalse();
+            buffer.Append('.');
+            buffer.Append('5');
+            buffer.Contains('.').Should().BeTrue();
+        }
     }
 }

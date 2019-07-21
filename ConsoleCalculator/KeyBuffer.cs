@@ -21,12 +21,12 @@ namespace ConsoleCalculator
             _buffer[++_pos] = digit;
         }
 
-        public int GetValue()
+        public float GetValue()
         {
             if (IsEmpty == true)
-                return 0;
+                return 0f;
             else 
-                return int.Parse(GetStringValue());
+                return float.Parse(GetStringValue());
         }
 
         public void Clear()
@@ -56,6 +56,11 @@ namespace ConsoleCalculator
         public bool IsEmpty => _pos == -1;
 
         public bool IsNegative { get; private set; }
+
+        public bool Contains(char c)
+        {
+            return _buffer.Contains(c);
+        }
     }
 
 }
