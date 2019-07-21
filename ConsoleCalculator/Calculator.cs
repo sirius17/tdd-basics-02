@@ -4,9 +4,25 @@ using System.Linq;
 
 namespace ConsoleCalculator
 {
+    public static class Globals
+    {
+        public static readonly char[] NumericKeys = new char[] { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.' };
+        public static readonly char[] OperatorKeys = new char[] { '+', '-', 'x', '/' };
+        public static readonly char[] SignKeys = new char[] { 's', 'S' };
+        public static readonly char[] ClearKeys = new char[] { 'c', 'C' };
+        public static readonly char[] EqualsKeys = new char[] { '=' };
+    }
+
     public class Calculator
     {
-        private readonly KeyBuffer _input = new KeyBuffer(15);
+        public Calculator()
+        {
+            RegisterAction(OnNumericCharacter, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.');
+            RegisterAction(_ => OnEqualTo(), '=');
+            RegisterAction(OnOperator, '+', '-', 'x', '/');
+            RegisterAction(_ => OnSignChange(), 's', 'S');
+            RegisterAction(_ => OnClearAll(), 'c', 'C');
+        }
 
         private static readonly HashSet<char> _supportedKeys = new HashSet<char>
         {
@@ -15,6 +31,7 @@ namespace ConsoleCalculator
             '+', '-', 'x', '/', '=',
             '.', 'c', 's', 'C', 'S'
         };
+        private static readonly Dictionary<char, Action<char>> _actions = new Dictionary<char, Action<char>>();
         private static readonly HashSet<char> Digits = new HashSet<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.' };
         private static readonly Dictionary<char, IBinaryOp> SupportedOperations = new Dictionary<char, IBinaryOp>
         {
@@ -25,6 +42,7 @@ namespace ConsoleCalculator
         };
 
 
+        private readonly KeyBuffer _input = new KeyBuffer(15);
         private float? _result = null;
         private float? _lastOperand = null;
         private IBinaryOp _op = null;
@@ -36,31 +54,23 @@ namespace ConsoleCalculator
                 var isSupported = _supportedKeys.Contains(key);
                 if (isSupported == true)
                 {
-                    if (IsOperator(key) == true)
-                        HandleOperator(key);
-                    else if (key == '=')
-                        HandleEquals();
-                    else if (IsDigit(key) == true)
-                        HandleDigit(key);
-                    else if (key == 's' || key == 'S')
-                        HandleSign();
-                    else if (key == 'c' || key == 'C')
-                        ResetCalculator();
+                    var found = _actions.TryGetValue(key, out Action<char> handleKey);
+                    if (found == true)
+                        handleKey(key);
                 }
             }
             catch
             {
-                HandleFault();
+                OnFault();
                 return "-E-";
             }
 
             return GetDisplayValue();
         }
 
-        private void HandleFault()
-        {
-            ResetCalculator();
-        }
+        private void OnFault() => ResetCalculator();
+
+        private void OnClearAll() => ResetCalculator();
 
         private void ResetCalculator()
         {
@@ -70,25 +80,23 @@ namespace ConsoleCalculator
             _op = null;
         }
 
-        private void HandleSign()
+        private void OnSignChange()
         {
             _input.ToggleSign();
         }
 
-        private void HandleDigit(char key)
+        private void OnNumericCharacter(char key)
         {
             // Ignore multiple decimal points.
             if (_input.Contains('.') && key == '.')
                 return;
             // Ignore multiple preceeding zeros.
-#pragma warning disable RECS0018 // Comparison of floating point numbers with equality operator
             if (_input.IsEmpty == false && _input.GetStringValue() == "0" && key != '.')
-#pragma warning restore RECS0018 // Comparison of floating point numbers with equality operator
                 _input.Clear();
             _input.Append(key);
         }
 
-        private void HandleEquals()
+        private void OnEqualTo()
         {
             /// Specification
             /// 1. If = is pressed without an operation, then current input is the last operand
@@ -111,7 +119,7 @@ namespace ConsoleCalculator
             _input.Clear();
         }
 
-        private void HandleOperator(char key)
+        private void OnOperator(char key)
         {
             /// Specification
             /// When an operator is pressed, if two operands are present, then the operation is applied to the result.
@@ -137,10 +145,6 @@ namespace ConsoleCalculator
             _input.Clear();
         }
 
-        private bool IsDigit(char key) => Digits.Contains(key);
-
-        private bool IsOperator(char key) => SupportedOperations.Keys.Contains(key);
-
         private string GetDisplayValue()
         {
             /// Spec:
@@ -154,6 +158,11 @@ namespace ConsoleCalculator
             if (_lastOperand != null)
                 return _lastOperand.ToString();
             return "0";
+        }
+
+        private static void RegisterAction(Action<char> action, params char[] characters)
+        {
+            Array.ForEach(characters, c => _actions[c] = action);
         }
     }
 
