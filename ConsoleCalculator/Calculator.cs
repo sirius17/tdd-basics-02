@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ConsoleCalculator
 {
     public class Calculator
     {
-        public readonly List<char> _digits = new List<char>();
+        private string _digits = string.Empty;
 
         public string SendKeyPress(char key)
         {
-            // Add your implementation here.
-            _digits.Add(key);
-            return new string(_digits.ToArray());
+            _digits = _digits + key;
+            return _digits;
         }
     }
 }
