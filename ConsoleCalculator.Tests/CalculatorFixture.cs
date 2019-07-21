@@ -69,5 +69,27 @@ namespace ConsoleCalculator.Tests
             calc.SendKeyPress('3');
             calc.SendKeyPress('=').Should().Be("6");
         }
+
+        [Fact]
+        public void Simple_subtraction_test()
+        {
+            var calc = new Calculator();
+            calc.SendKeyPress('2');
+            calc.SendKeyPress('-');
+            calc.SendKeyPress('2');
+            calc.SendKeyPress('=').Should().Be("0");
+        }
+
+        [Fact]
+        public void Chained_subtraction_test()
+        {
+            var calc = new Calculator();
+            calc.SendKeyPress('3');
+            calc.SendKeyPress('-');
+            calc.SendKeyPress('1');
+            calc.SendKeyPress('-').Should().Be("2");
+            calc.SendKeyPress('2');
+            calc.SendKeyPress('=').Should().Be("0");
+        }
     }
 }
