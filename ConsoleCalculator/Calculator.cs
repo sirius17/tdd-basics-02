@@ -20,7 +20,8 @@ namespace ConsoleCalculator
         {
             {'+', new Add()},
             {'-', new Subtract()},
-            {'x', new Multiply() }
+            {'x', new Multiply() },
+            {'/', new Divide() }
         };
 
         private int? _accumulator = null;
@@ -85,5 +86,10 @@ namespace ConsoleCalculator
     public class Multiply : IBinaryOp
     {
         public int Apply(int opA, int opB) => opA * opB;
+    }
+
+    public class Divide : IBinaryOp
+    {
+        public int Apply(int opA, int opB) => opA / opB;
     }
 }

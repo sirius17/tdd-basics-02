@@ -131,5 +131,27 @@ namespace ConsoleCalculator.Tests
             calc.SendKeyPress('4');
             calc.SendKeyPress('=').Should().Be("24");
         }
+
+        [Fact]
+        public void Simple_division_test()
+        {
+            var calc = new Calculator();
+            calc.SendKeyPress('8');
+            calc.SendKeyPress('/');
+            calc.SendKeyPress('2');
+            calc.SendKeyPress('=').Should().Be("4");
+        }
+
+        [Fact]
+        public void Chained_division_test()
+        {
+            var calc = new Calculator();
+            calc.SendKeyPress('8');
+            calc.SendKeyPress('/');
+            calc.SendKeyPress('4');
+            calc.SendKeyPress('/').Should().Be("2");
+            calc.SendKeyPress('2');
+            calc.SendKeyPress('=').Should().Be("1");
+        }
     }
 }
