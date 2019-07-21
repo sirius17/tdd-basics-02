@@ -109,5 +109,27 @@ namespace ConsoleCalculator.Tests
             calc.SendKeyPress('3');
             calc.SendKeyPress('=').Should().Be("-5");
         }
+
+        [Fact]
+        public void Simple_multiplication_test()
+        {
+            var calc = new Calculator();
+            calc.SendKeyPress('2');
+            calc.SendKeyPress('x');
+            calc.SendKeyPress('2');
+            calc.SendKeyPress('=').Should().Be("4");
+        }
+
+        [Fact]
+        public void Chained_multiplication_test()
+        {
+            var calc = new Calculator();
+            calc.SendKeyPress('2');
+            calc.SendKeyPress('x');
+            calc.SendKeyPress('3');
+            calc.SendKeyPress('x').Should().Be("6");
+            calc.SendKeyPress('4');
+            calc.SendKeyPress('=').Should().Be("24");
+        }
     }
 }

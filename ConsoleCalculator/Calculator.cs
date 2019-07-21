@@ -19,7 +19,8 @@ namespace ConsoleCalculator
         private static readonly Dictionary<char, IBinaryOp> SupportedOperations = new Dictionary<char, IBinaryOp>
         {
             {'+', new Add()},
-            {'-', new Subtract()}
+            {'-', new Subtract()},
+            {'x', new Multiply() }
         };
 
         private int? _accumulator = null;
@@ -79,5 +80,10 @@ namespace ConsoleCalculator
     public class Subtract : IBinaryOp
     {
         public int Apply(int opA, int opB) => opA - opB;
+    }
+
+    public class Multiply : IBinaryOp
+    {
+        public int Apply(int opA, int opB) => opA * opB;
     }
 }
