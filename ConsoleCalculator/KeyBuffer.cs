@@ -21,7 +21,13 @@ namespace ConsoleCalculator
             _buffer[++_pos] = digit;
         }
 
-        public int GetValue() => int.Parse(GetStringValue());
+        public int GetValue()
+        {
+            if (IsEmpty == true)
+                return 0;
+            else 
+                return int.Parse(GetStringValue());
+        }
 
         public void Clear()
         {
@@ -35,7 +41,7 @@ namespace ConsoleCalculator
 
         public void ToggleSign()
         {
-            if (IsEmpty == false)
+            if (IsEmpty == false && GetValue() != 0)
                 IsNegative = !IsNegative;
         }
 

@@ -213,7 +213,7 @@ namespace ConsoleCalculator.Tests
         }
 
         [Fact]
-        public void Equal_without_operation_should_treat_operand_as_result()
+        public void Equal_without_operation_should_treat_operand_as_result_test()
         {
             var calc = new Calculator();
             calc.SendKeySequence("1=").Should().Be("1");
@@ -222,13 +222,20 @@ namespace ConsoleCalculator.Tests
 
 
         [Fact]
-        public void Clear_should_reset_calculator()
+        public void Clear_should_reset_calculator_test()
         {
             var calc = new Calculator();
             calc.SendKeySequence("1+2=").Should().Be("3");
             calc.SendKeyPress('c').Should().Be("0");
             calc.SendKeySequence("1+2=").Should().Be("3");
             calc.SendKeyPress('C').Should().Be("0");
+        }
+
+        [Fact]
+        public void Errors_should_display_as_error_test()
+        {
+            var calc = new Calculator();
+            calc.SendKeySequence("3/0=").Should().Be("-E-");
         }
 
 

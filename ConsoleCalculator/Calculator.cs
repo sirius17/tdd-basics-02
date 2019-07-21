@@ -6,7 +6,7 @@ namespace ConsoleCalculator
 {
     public class Calculator
     {
-
+        private readonly KeyBuffer _input = new KeyBuffer(15);
 
         private static readonly HashSet<char> _supportedKeys = new HashSet<char>
         {
@@ -24,29 +24,42 @@ namespace ConsoleCalculator
             {'/', new Divide() }
         };
 
-        private readonly KeyBuffer _input = new KeyBuffer(15);
+
         private int? _result = null;
         private int? _lastOperand = null;
         private IBinaryOp _op = null;
 
         public string SendKeyPress(char key)
         {
-            var isSupported = _supportedKeys.Contains(key);
-            if (isSupported == true)
+            try
             {
-                if (IsOperator(key) == true)
-                    HandleOperator(key);
-                else if (key == '=')
-                    HandleEquals();
-                else if (IsDigit(key) == true)
-                    HandleDigit(key);
-                else if (key == 's' || key == 'S')
-                    HandleSign();
-                else if (key == 'c' || key == 'C')
-                    ResetCalculator();
+                var isSupported = _supportedKeys.Contains(key);
+                if (isSupported == true)
+                {
+                    if (IsOperator(key) == true)
+                        HandleOperator(key);
+                    else if (key == '=')
+                        HandleEquals();
+                    else if (IsDigit(key) == true)
+                        HandleDigit(key);
+                    else if (key == 's' || key == 'S')
+                        HandleSign();
+                    else if (key == 'c' || key == 'C')
+                        ResetCalculator();
+                }
+            }
+            catch
+            {
+                HandleFault();
+                return "-E-";
             }
 
             return GetDisplayValue();
+        }
+
+        private void HandleFault()
+        {
+            ResetCalculator();
         }
 
         private void ResetCalculator()
@@ -64,11 +77,9 @@ namespace ConsoleCalculator
 
         private void HandleDigit(char key)
         {
-            var isPrefixedZero = _input.IsEmpty == true && key == '0';
-            if (isPrefixedZero == false)
-            {
-                _input.Append(key);
-            }
+            if (_input.IsEmpty == false && _input.GetValue() == 0)
+                    _input.Clear();
+            _input.Append(key);
         }
 
         private void HandleEquals()
