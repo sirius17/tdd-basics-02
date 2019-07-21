@@ -4,15 +4,6 @@ using System.Linq;
 
 namespace ConsoleCalculator
 {
-    public static class Globals
-    {
-        public static readonly char[] NumericKeys = new char[] { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.' };
-        public static readonly char[] OperatorKeys = new char[] { '+', '-', 'x', '/' };
-        public static readonly char[] SignKeys = new char[] { 's', 'S' };
-        public static readonly char[] ClearKeys = new char[] { 'c', 'C' };
-        public static readonly char[] EqualsKeys = new char[] { '=' };
-    }
-
     public class Calculator
     {
         public Calculator()
