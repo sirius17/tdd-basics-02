@@ -80,9 +80,9 @@ namespace ConsoleCalculator
             // Ignore multiple decimal points.
             if (_input.Contains('.') && key == '.')
                 return;
-            // Ingore multiple preceeding zeros.
+            // Ignore multiple preceeding zeros.
 #pragma warning disable RECS0018 // Comparison of floating point numbers with equality operator
-            if (_input.IsEmpty == false && _input.GetValue() == 0f)
+            if (_input.IsEmpty == false && _input.GetStringValue() == "0" && key != '.')
 #pragma warning restore RECS0018 // Comparison of floating point numbers with equality operator
                 _input.Clear();
             _input.Append(key);
