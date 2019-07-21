@@ -40,10 +40,13 @@ namespace ConsoleCalculator
             }
             else if (key == '=')
             {
-                var opA = _accumulator.Value;
-                var opB = int.Parse(_digits);
-                _accumulator = _op.Apply(opA, opB);
-                _display = _accumulator.ToString();
+                if (_op != null)
+                {
+                    var opA = _accumulator.Value;
+                    var opB = int.Parse(_digits);
+                    _accumulator = _op.Apply(opA, opB);
+                }
+                _display = (_accumulator ?? 0).ToString();
                 _digits = string.Empty;
             }
             else if(IsDigit(key) == true)
@@ -54,9 +57,7 @@ namespace ConsoleCalculator
             return _display;
         }
 
-        private int CurrentOperand => int.Parse(_digits);
-
-
+        private int CurrentOperand => string.IsNullOrWhiteSpace(_digits) == true ? 0 : int.Parse(_digits);
 
         private bool IsDigit(char key) => Digits.Contains(key);
 

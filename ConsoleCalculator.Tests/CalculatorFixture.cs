@@ -91,5 +91,12 @@ namespace ConsoleCalculator.Tests
             calc.SendKeyPress('2');
             calc.SendKeyPress('=').Should().Be("0");
         }
+
+        [Fact]
+        public void Default_first_operand_value_is_0_test()
+        {
+            var calc = new Calculator();
+            calc.SendKeyPress('=').Should().Be("0");
+        }
     }
 }
